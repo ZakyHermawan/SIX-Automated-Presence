@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 import json
 import time
 import re
@@ -53,10 +54,16 @@ try:
   # For testing purposes
   classes_today[0].click()
   popup_dialog = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//div[@role=\'dialog\']')))
-  popup_dialog.find_element_by_xpath('.//button[@name=\'form[hadir]\']').click()
+  presence_button = popup_dialog.find_element_by_xpath('.//button[@name=\'form[hadir]\']')
+  presence_button.click()
 
   # print(classes_schedule)
   # driver.find_element_by_xpath()
+except NoSuchElementException as exc:
+  print('Presence failed. Some things are possible:')
+  print('> Your class does not use the SIX presence system')
+  print('> Your class have not opened the presence form yet')
+  print('> You have already filled the presence form')
 except Exception as exc:
   print(exc)
 finally:

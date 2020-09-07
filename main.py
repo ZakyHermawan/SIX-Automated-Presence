@@ -28,7 +28,7 @@ try:
 
   # SIX Dashboard
   # WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//a[contains(@href, \'/app/mahasiswa:{}/kelas\')]'.format(credentials["nim"])))).click()
-  class_link = driver.find_elemen t_by_xpath('//a[contains(@href, \'/app/mahasiswa:{}/kelas\')]'.format(credentials["nim"]))
+  class_link = driver.find_element_by_xpath('//a[contains(@href, \'/app/mahasiswa:{}/kelas\')]'.format(credentials["nim"]))
   driver.execute_script("arguments[0].click();", class_link)
 
   # SIX Class Menu

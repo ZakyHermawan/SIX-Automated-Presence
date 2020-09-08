@@ -41,7 +41,12 @@ try:
 
   # SIX Dashboard
   logging.info('Opening SIX dashboard....')
-  class_link = driver.find_element_by_xpath('//a[contains(@href, \'/app/mahasiswa:{}/kelas\')]'.format(credentials["nim"]))
+  fullhtml = driver.find_elements_by_tag_name('body')[0].get_attribute('innerHTML')
+  try:
+    nim = re.search(".*mahasiswa:(.*?)/.*?", fullhtml).group(1)
+  except:
+    raise Exception('Password is incorrect or not a mahasiswa.')
+  class_link = driver.find_element_by_xpath('//a[contains(@href, \'/app/mahasiswa:{}/kelas\')]'.format(nim))
   driver.execute_script("arguments[0].click();", class_link)
 
   # SIX Class Menu
@@ -51,9 +56,9 @@ try:
   classes_schedule = list(map(lambda val: re.sub(r'(..:..-..:..).*', r'\1', val.text).split('-'), classes_today))
 
   # Get current time
-  t = time.localtime()
+  t = time.gmtime(time.time()+25200)
   current_time = time.strftime("%H:%M", t)
-
+  logging.info('Current time: '+str(current_time))
   # Input presence current attended class
   logging.info('Finding attended class....')
   found = False

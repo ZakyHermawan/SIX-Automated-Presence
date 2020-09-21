@@ -2,9 +2,13 @@ from presence import presence
 import json
 
 with open('credentials.json', 'r') as f:
-  credentials = json.load(f)
+    credentials = json.load(f)
 
-def success():
-  print('yey')
+def success(classcode, message):
+    print(f"Successful presence for {classcode} class")
 
-presence(credentials['username'], credentials['password'], success, headless=False)
+
+def fail(code, classcode, message):
+    print(f"Fail {code}. Reason: {message}")
+
+presence(credentials['username'], credentials['password'], success_callback=success, fail_callback=fail, headless=False)

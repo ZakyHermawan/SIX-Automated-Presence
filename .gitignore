@@ -2,3 +2,5 @@ geckodriver.log
 credentials.json
 venv/
 .vscode/
+__pycache__/
+.mypy_cache/

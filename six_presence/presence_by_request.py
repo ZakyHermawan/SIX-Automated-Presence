@@ -50,6 +50,7 @@ def presence(username, password, fail_callback=lambda status: None, success_call
     # If nothing is highlighted, there's no class (status code NO_CLASS)
     if(classes_block is None):
         logging.info(RequestCodeMessage.NO_CLASS)
+        fail_callback(RequestCode.NO_CLASS)
         return (RequestCode.NO_CLASS, RequestCodeMessage.NO_CLASS, None)
 
     classes_links = classes_block.find_all('a')
@@ -94,4 +95,5 @@ def presence(username, password, fail_callback=lambda status: None, success_call
 
     # There's currently no class (status code NO_CLASS)
     logging.info(RequestCodeMessage.NO_CLASS)
+    fail_callback(RequestCode.NO_CLASS)
     return (RequestCode.NO_CLASS, RequestCodeMessage.NO_CLASS, None)

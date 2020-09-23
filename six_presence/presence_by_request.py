@@ -36,7 +36,7 @@ def presence(username, password, fail_callback=lambda status: None, success_call
     # If not found, login is failed (status code INVALID_LOGIN)
     try:
         class_link = list(map(lambda div: div.find('a'), BeautifulSoup(six_page_html, 'html.parser').findAll('div',{"class": "col-xs-4 col-sm-3 col-md-2 text-center"})))[3]
-        logging.info('Login succesful')
+        logging.info('Login successful')
     except:
         logging.info(RequestCodeMessage.INVALID_LOGIN)
         fail_callback(RequestCode.INVALID_LOGIN)

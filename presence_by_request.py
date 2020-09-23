@@ -47,7 +47,11 @@ for c in classes_today:
     class_html = BeautifulSoup(session.get(f'https://akademik.itb.ac.id{c["url"]}').text, 'html.parser')
     class_action = class_html.find('form')['action']
     class_token = class_html.find_all('input')[1]['value']
-    # print(class_inputs)
+    
+    # Check if presence form is filled
+    if(class_html.find('button', {"name": "form[tidakhadir]"}) is not None):
+        raise Exception()
+
     presence_data = {
         "form[hadir]": "",
         "form[returnTo]": class_link["href"].strip(),
@@ -55,7 +59,7 @@ for c in classes_today:
     }
 
     result = session.post(f'https://akademik.itb.ac.id{class_action}', presence_data)
-    print(result)
+    print(f'Presence successfully filled for {c["name"]}')
   except:
     print(f'Can\'t fill presence for {c["name"]}')
 

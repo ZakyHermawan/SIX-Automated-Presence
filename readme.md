@@ -44,7 +44,7 @@ pip install -r requirements.txt
 4. Jalankan code ini.
 
 ```bash
-python main.py
+run.bat
 ```
 
 
@@ -53,12 +53,8 @@ python main.py
 Untuk Windows:
 
 ```bash
-schtasks /CREATE /SC HOURLY /tn AutoLoginSIX /tr $PATH\run.bat
+schtasks /CREATE /SC HOURLY /tn AutoLoginSIX /tr run.bat
 ```
-
-
-Ganti $PATH dengan lokasi direktori ini, contoh: D:\Programs\SIX-Automated-Presence
-Pastikan tidak ada spasi pada path
 
 Catatan: 
 auto scheduler ini dibuat untuk run program setiap 60 menit sejak tasks scheduler dibuat, Anda dapat menyesuaikannya sendiri dengan membaca link referensi
@@ -67,29 +63,8 @@ Hati-hati bila jadwal kuliah Anda Ada yang tidak memiliki pola yang tetap.
 
 Referensi: [Membuat task scheduler pada Windwos](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/schtasks)
 
-6. Rubah file run.bat
 
-
-Contoh
-```
-@echo off
-echo Starting script...
-D:
-cd SourceCode\SIX-Automated-Presence
-call venv\SourceCode\activate.bat
-echo %CD%
-python D:\SourceCode\SIX-Automated-Presence\main.py
-call venv\SourceCode\deactivate.bat
-timeout 10
-```
-
-Penjelasan:
-Baris ketiga : Gunakan D: bila Anda menyimpan program ini di disk D, gunakan C: bila Anda menyimpan program ini di disk 
-Baris keempat : Pindah ke lokasi sekarang
-baris ketujuh : run script
-
-
-7. Hapus Schedule
+6. Task Scheduler
 
 Hapus scheduled task jika semua jadwal kuliah telah usai
 

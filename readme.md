@@ -47,32 +47,22 @@ pip install -r requirements.txt
 run.bat
 ```
 
+# CRON
 
-5. Buat tasks scheduler agar program dapat di run dalam kurun waktu tertentu [optional]
 
-Untuk Windows:
+## Windows:
 
-```bash
-schtasks /CREATE /SC HOURLY /tn AutoLoginSIX /tr run.bat
-```
+1. Tambahkan folder root SIX-Automated-Presence ke PATH (Environment Variable)
+
+2. Jalankan cron.bat untuk aktivasi/deaktivasi CRON
 
 Catatan: 
-auto scheduler ini dibuat untuk run program setiap 60 menit sejak tasks scheduler dibuat, Anda dapat menyesuaikannya sendiri dengan membaca link referensi
+Auto scheduler ini dibuat untuk run program setiap 60 menit sejak tasks scheduler dibuat, Anda dapat menyesuaikannya sendiri dengan mengubah cron.bat, silakan link referensi
 Sebaiknya buat tasks scheduler ketika baru saja mengabsen, misal Anda meengabsen pada 7.01 dan membuat tasks schedule pada 7.02 maka Program akan di run pada 8.02, 9.02, dst sehingga Anda tidak kelewatan Presensi.
 Hati-hati bila jadwal kuliah Anda Ada yang tidak memiliki pola yang tetap.
 
 Referensi: [Membuat task scheduler pada Windwos](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/schtasks)
 
-
-6. Task Scheduler
-
-Hapus scheduled task jika semua jadwal kuliah telah usai
-
-Windows:
-
-```bash
-schtasks /DELETE /tn AutoLoginSIX /f
-```
 
 # Contributing
 

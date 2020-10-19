@@ -1,9 +1,6 @@
 @echo off
 echo Starting script...
-D:
-cd SourceCode\SIX-Automated-Presence
-call venv\Scripts\activate.bat
-echo %CD%
-python D:\SourceCode\SIX-Automated-Presence\main.py
-call venv\Scripts\deactivate.bat
+call "%~dp0venv\Scripts\activate.bat"
+python "%~dp0main.py"
+call "%~dp0venv\Scripts\deactivate.bat"
 timeout 10

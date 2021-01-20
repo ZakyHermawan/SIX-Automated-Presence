@@ -1,6 +1,6 @@
 @echo off
 echo Starting script...
-call venv\Scripts\activate.bat
-python main.py
-call deactivate
-pause
+call "%~dp0venv\Scripts\activate.bat"
+python "%~dp0main.py"
+call "%~dp0venv\Scripts\deactivate.bat"
+timeout 10

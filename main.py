@@ -1,8 +1,11 @@
 # from presence import presence
 from six_presence.presence_by_request import presence
 import json
+import os
 
-with open('credentials.json', 'r') as f:
+path = os.path.dirname(os.path.abspath(__file__))
+
+with open(os.path.join(path,'credentials.json'), 'r') as f:
     credentials = json.load(f)
 
 # def success(classcode, message):

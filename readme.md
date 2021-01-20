@@ -1,10 +1,14 @@
 # 📝 six-presence
 
-![alt](https://github.com/mkamadeus/SIX-Automated-Presence/workflows/Python%20package/badge.svg)
+![mypy](https://github.com/mkamadeus/SIX-Automated-Presence/workflows/mypy/badge.svg)
+[![GitHub forks](https://img.shields.io/github/forks/mkamadeus/SIX-Automated-Presence)](https://github.com/mkamadeus/SIX-Automated-Presence/network)
+[![GitHub stars](https://img.shields.io/github/stars/mkamadeus/SIX-Automated-Presence)](https://github.com/mkamadeus/SIX-Automated-Presence/stargazers)
+[![GitHub license](https://img.shields.io/github/license/mkamadeus/SIX-Automated-Presence)](https://github.com/mkamadeus/SIX-Automated-Presence/blob/master/LICENSE)
+[![PyPI version](https://badge.fury.io/py/six-presence.svg)](https://badge.fury.io/py/six-presence)
 
 ## Introduction
 
-Utility function to fill your presence on SIX ITB. Use this with care, do not use to violate the ethics and rule that applies at ITB _(e.g: tipsen)_.
+Utility function to fill your presence on SIX ITB. Use this with care, **DO NOT** use to violate the ethics and rule that applies at ITB _(e.g: tipsen)_.
 
 ## Prerequisites
 

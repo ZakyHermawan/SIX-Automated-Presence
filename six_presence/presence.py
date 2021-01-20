@@ -1,141 +1,104 @@
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from enum import Enum
+import requests
+import json
 import time
-import re
-
 import logging
-logging.basicConfig(format='[%(asctime)s] - %(message)s', datefmt='%d %b %H:%M:%S', level=logging.INFO)
+from .status_code import RequestCode, RequestCodeMessage
+from bs4 import BeautifulSoup
 
-class Code(Enum):
-    DRIVER_INIT_ERROR = 0
-    INVALID_LOGIN = 1
-    NO_CLASS = 2
-    PRESENCE_NOT_OPENED_YET = 3
-    SUCCESS = 4
-    PRESENCE_ALREADY_FILLED = 5
+# Load credentials
+def fill_presence(username: str, password: str, fail_callback=lambda status: None, success_callback=lambda: None):
+    '''
+    Tries to fill presence on that day, on that specific range of time. Based on WIB. Can't be used to check on a specific class to avoid 
+    '''
+    # Set logging config
+    logging.basicConfig(format='[%(asctime)s] - %(message)s', datefmt='%d %b %H:%M:%S', level=logging.INFO)
 
+    # Create session for persisting cookies throughout requests
+    logging.info('Creating session')
+    session = requests.Session()
 
-message = {
-    Code.DRIVER_INIT_ERROR: "Failed to init driver",
-    Code.INVALID_LOGIN: "Invalid password",
-    Code.NO_CLASS: "There's currently no class",
-    Code.PRESENCE_NOT_OPENED_YET: "Presence form not opened yet",
-    Code.SUCCESS: "Presence form filled successfully",
-    Code.PRESENCE_ALREADY_FILLED: "Presence form already filled",
-}
-def presence(username, password, success_callback=lambda: None, fail_callback=lambda: None, delay=8, headless=True, options=None):
-    code = Code.DRIVER_INIT_ERROR
-    classcode = ""
+    # Load login page
+    login_page_request = session.get('https://login.itb.ac.id/cas/login?service=https://akademik.itb.ac.id/login/INA')
 
-    # Presence
+    # Get token from loading page
+    login_page_token = BeautifulSoup(login_page_request.text, 'html5lib').find_all('input')[2]['value']
+
+    # POST login data, auto-redirected to SIX
+    logging.info(f'Logging in for user {username}')
+    login_data = {
+        "username": username,
+        "password": password,
+        "execution": login_page_token,
+        "_eventId": "submit",
+        "geolocation": ""
+    }
+    six_page_html = session.post('https://login.itb.ac.id/cas/login?service=https://akademik.itb.ac.id/login/INA', login_data).text
+
+    # Find class link
+    # If not found, login is failed (status code INVALID_LOGIN)
     try:
-        # Preparing webdriver
-        logging.info('Preparing webdriver')
-        if options is None:
-            options = Options()
-            if(headless):
-                options.add_argument("--headless")
-        args = {
-            "options": options,
-        }
+        class_link = list(map(lambda div: div.find('a'), BeautifulSoup(six_page_html, 'html5lib').findAll('div',{"class": "col-xs-4 col-sm-3 col-md-2 text-center"})))[3]
+        logging.info('Login successful')
+    except:
+        logging.info(RequestCodeMessage.INVALID_LOGIN)
+        fail_callback(RequestCode.INVALID_LOGIN)
+        return (RequestCode.INVALID_LOGIN, RequestCodeMessage.INVALID_LOGIN, None)
+    
 
-        # Opening webdriver
-        logging.info('Opening webdriver')
-        driver = None
-        cnt = 0
-        error = None
-        while driver is None and cnt < 10:
-            try:
-                driver = webdriver.Firefox(**args)
-                break
-            except Exception as e:
-                cnt += 1
-                error = e
-        else:
-            logging.error("Fail to init webdriver after retrying " + str(cnt) + " times | " + str(error))
-            raise error
+    # GET request for getting the links of the classes today
+    class_page_html = session.get(f'https://akademik.itb.ac.id{class_link["href"].strip()}').text
+    classes_block = BeautifulSoup(class_page_html, 'html5lib').find('td', {"class": "bg-info"})
 
-        # Presencing...
-        code, classcode = presence_util(driver, username, password, delay)
-        if code == Code.SUCCESS:
-            success_callback(classcode, message[code])
-        else:
-            fail_callback(code, classcode, message[code])
+    # print(classes_block)
+    # If nothing is highlighted, there's no class (status code NO_CLASS)
+    if(classes_block is None):
+        logging.info(RequestCodeMessage.NO_CLASS)
+        fail_callback(RequestCode.NO_CLASS)
+        return (RequestCode.NO_CLASS, RequestCodeMessage.NO_CLASS, None)
 
-    except Exception as exc:
-        logging.exception(exc)
-    finally:
-        if driver is not None:
-            driver.quit()
-        return (code, classcode, message[code])
-
-def presence_util(driver, username, password, delay):
-    driver.implicitly_wait(0.1)
-
-    # INA Login page
-    logging.info('Opening INA login site')
-    driver.get('https://login.itb.ac.id/cas/login?service=https%3A%2F%2Fakademik.itb.ac.id%2Flogin%2FINA')
-    driver.find_element_by_id("username").send_keys(username)
-    driver.find_element_by_id("password").send_keys(password)
-    driver.find_element_by_xpath('//input[@type=\'submit\']').click()
-
-    # SIX Dashboard
-    logging.info('Opening SIX dashboard')
-    fullhtml = driver.find_elements_by_tag_name('body')[0].get_attribute('innerHTML')
-    try:
-        _ = re.search(".*mahasiswa:(.*?)/.*?", fullhtml).group(1)  # nim
-    except Exception:
-        return (Code.INVALID_LOGIN, "")
-    class_link = driver.find_elements_by_xpath("//div[contains(@class, 'apps')]//div[contains(@class, 'col-xs-4 col-sm-3 col-md-2 text-center')]")[3]
-    class_link.click()
-
-    # SIX Class Menu
-    logging.info('Opening SIX class menu')
-    current_day_cell = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.CLASS_NAME, 'bg-info')))
-    classes_today = current_day_cell.find_elements_by_xpath('.//div/div[@title]/a')
-    classes_schedule = list(map(lambda val: re.sub(r'(..:..-..:..).*', r'\1', val.text).split('-'), classes_today))
-    classes_code = list(map(lambda val: val.text[12:], classes_today))
+    classes_links = classes_block.find_all('a')
+    classes_today = list(map(lambda c: {"name": c['data-kuliah'], "start_time": c.text.strip()[:5], "end_time": c.text.strip()[6:11], "url": c['data-url']}, classes_links))
 
     # Get current server time (GMT +7)
     t = time.gmtime(time.time() + 25200)
     current_time = time.strftime("%H:%M", t)
-    logging.info('Current server time: {}'.format(current_time))
 
-    # Input presence current z`attended class
-    for index, schedule in enumerate(classes_schedule):
-        # Get schedule time
-        start_time, end_time = schedule[0], schedule[1]
+    # Try to fill presence form for each link
+    for c in classes_today:
+        if(c['start_time'] <= current_time <= c['end_time']):
+            class_html = BeautifulSoup(session.get(f'https://akademik.itb.ac.id{c["url"]}').text, 'html5lib')
+            
+            # If presence form does not exist, presence failed (status code PRESENCE_NOT_OPEN)
+            if(class_html.find('form') is None):
+                logging.info(f'{RequestCodeMessage.INVALID_LOGIN} for {c["name"]}')
+                fail_callback(RequestCode.PRESENCE_NOT_OPEN)
+                return (RequestCode.PRESENCE_NOT_OPEN, RequestCodeMessage.PRESENCE_NOT_OPEN, c["name"])
 
-        if(start_time <= current_time <= end_time):
-            logging.info('Checking {}'.format(classes_code[index]))
-            classes_today[index].send_keys(Keys.ENTER)
+            class_action = class_html.find('form')['action']
+            class_token = class_html.find_all('input')[1]['value']
+            
+            # If presence button does not exist, presence failed (status code PRESENCE_FILLED)
+            if(class_html.find('button', {"name": "form[tidakhadir]"})):
+                logging.info(f'{RequestCodeMessage.PRESENCE_FILLED} for {c["name"]}')
+                fail_callback(RequestCode.PRESENCE_FILLED)
+                return (RequestCode.PRESENCE_FILLED, RequestCodeMessage.PRESENCE_FILLED, c["name"])
 
-            # Wait until finished loading
-            WebDriverWait(driver, delay).until(EC.invisibility_of_element((By.XPATH, "//*[contains(@class, 'loading')]")))
+            # Try filling the presence form
+            presence_data = {
+                "form[hadir]": "",
+                "form[returnTo]": class_link["href"].strip(),
+                "form[_token]": class_token,
+            }
 
-            # Checking for unpresence button
-            try:
-                _ = driver.find_element_by_id('form_tidakhadir')
-                logging.info('Presence form is filled for {}'.format(classes_code[index]))
-                return (Code.PRESENCE_ALREADY_FILLED, classes_code[index])
-            except Exception:
-                pass
+            # Do a POST request to fill presence
+            session.post(f'https://akademik.itb.ac.id{class_action}', presence_data)
 
-            # Checking for presence button
-            try:
-                presence_button = driver.find_element_by_id('form_hadir')
-                presence_button.click()
-                logging.info('Presence successful')
-                return (Code.SUCCESS, classes_code[index])
-            except Exception:
-                logging.info('Presence form currently closed for {}'.format(classes_code[index]))
-                return(Code.PRESENCE_NOT_OPENED_YET, classes_code[index])
+            # Presence form filled (status code SUCCESS)
+            logging.info(f'{RequestCodeMessage.SUCCESS} for {c["name"]}')
+            success_callback()
+            return (RequestCode.SUCCESS, RequestCodeMessage.SUCCESS, c["name"])
 
-        else:
-            logging.info('Currently is not the time for {}'.format(classes_code[index]))
-    return (Code.NO_CLASS, "")
+    # There's currently no class (status code NO_CLASS)
+    logging.info(RequestCodeMessage.NO_CLASS)
+    fail_callback(RequestCode.NO_CLASS)
+    return (RequestCode.NO_CLASS, RequestCodeMessage.NO_CLASS, None)

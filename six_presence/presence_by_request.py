@@ -2,7 +2,7 @@ import requests
 import json
 import time
 import logging
-from six_presence.status_code import RequestCode, RequestCodeMessage
+from status_code import RequestCode, RequestCodeMessage
 from bs4 import BeautifulSoup
 
 # Load credentials

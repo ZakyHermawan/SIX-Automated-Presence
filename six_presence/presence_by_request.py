@@ -19,7 +19,7 @@ def presence(username, password, fail_callback=lambda status: None, success_call
     login_page_request = session.get('https://login.itb.ac.id/cas/login?service=https://akademik.itb.ac.id/login/INA')
 
     # Get token from loading page
-    login_page_token = BeautifulSoup(login_page_request.text, 'html.parser').find_all('input')[2]['value']
+    login_page_token = BeautifulSoup(login_page_request.text, 'html5lib').find_all('input')[2]['value']
 
     # POST login data, auto-redirected to SIX
     logging.info(f'Logging in for user {username}')
@@ -35,7 +35,7 @@ def presence(username, password, fail_callback=lambda status: None, success_call
     # Find class link
     # If not found, login is failed (status code INVALID_LOGIN)
     try:
-        class_link = list(map(lambda div: div.find('a'), BeautifulSoup(six_page_html, 'html.parser').findAll('div',{"class": "col-xs-4 col-sm-3 col-md-2 text-center"})))[3]
+        class_link = list(map(lambda div: div.find('a'), BeautifulSoup(six_page_html, 'html5lib').findAll('div',{"class": "col-xs-4 col-sm-3 col-md-2 text-center"})))[3]
         logging.info('Login successful')
     except:
         logging.info(RequestCodeMessage.INVALID_LOGIN)
@@ -45,8 +45,9 @@ def presence(username, password, fail_callback=lambda status: None, success_call
 
     # GET request for getting the links of the classes today
     class_page_html = session.get(f'https://akademik.itb.ac.id{class_link["href"].strip()}').text
-    classes_block = BeautifulSoup(class_page_html, 'html.parser').find('td', {"class": "bg-info"})
+    classes_block = BeautifulSoup(class_page_html, 'html5lib').find('td', {"class": "bg-info"})
 
+    # print(classes_block)
     # If nothing is highlighted, there's no class (status code NO_CLASS)
     if(classes_block is None):
         logging.info(RequestCodeMessage.NO_CLASS)
@@ -63,7 +64,7 @@ def presence(username, password, fail_callback=lambda status: None, success_call
     # Try to fill presence form for each link
     for c in classes_today:
         if(c['start_time'] <= current_time <= c['end_time']):
-            class_html = BeautifulSoup(session.get(f'https://akademik.itb.ac.id{c["url"]}').text, 'html.parser')
+            class_html = BeautifulSoup(session.get(f'https://akademik.itb.ac.id{c["url"]}').text, 'html5lib')
             
             # If presence form does not exist, presence failed (status code PRESENCE_NOT_OPEN)
             if(class_html.find('form') is None):

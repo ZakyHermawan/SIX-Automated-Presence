@@ -1,82 +1,38 @@
-# SIX Automated Presence
+# 📝 six-presence
 
-> Buat kelas onlen.
+![alt](https://github.com/mkamadeus/SIX-Automated-Presence/workflows/Python%20package/badge.svg)
 
-# Pendahuluan
+## Introduction
 
-![Working proof](./proof.gif)
+Utility function to fill your presence on SIX ITB. Use this with care, do not use to violate the ethics and rule that applies at ITB _(e.g: tipsen)_.
 
-Buat absen di SIX ITB. CRON not included, silakan fork untuk kepentingan bersama.
+## Prerequisites
 
-# Prerequisites
+Having Python >=3.6.
 
-- Punya Python. Kalo gapunya ya gabisa.
-- Untuk Selenium harus disetup sendiri; cari driver browser yang sesuai. Dalam code ini saya menggunakan [geckodriver](https://github.com/mozilla/geckodriver/releases) untuk Firefox. Ikutin petunjuk yang ada, masukin ke _*PATH*_.
+## Installation
 
-_Note_: As per 23/09/2020, setup Selenium sudah bisa diabaikan bila menggunakan modul absensi berbasiskan HTTP Request. (`presence_by_request.py`)
-
-# Setup
-
-1. Jalanin di cmd/terminal untuk setup venv:
+To install for personal use, you can do:
 
 ```bash
-python -m venv venv
+pip install six-presence
 ```
 
-2. Masuk ke venv:
+Here's a sample script:
 
-Untuk Windows:
+```py
+from six_presence.presence import fill_presence
 
-```bash
-venv\Scripts\activate
-pip install -r requirements.txt
+fill_presence('your-username', 'your-password')
 ```
 
-Untuk Linux-based System:
+I've prepared a simple script to demonstrate the usage of this script in the `scripts` folder for you to check out. You can download the script for yourself.
 
-```
-./venv/scripts/activate
-pip install -r requirements.txt
-```
+## Contributing
 
-3. Buat file `credentials.json`, masukkan username dan password akun SIX Anda (lihat contoh pada credentials.example.json).
+Feel free to contribute, feature request and issues are highly appreciated! :)
 
-4. Jalankan code ini.
-
-```bash
-run.bat
-```
-
-# CRON
-
-
-## Windows:
-
-1. Tambahkan folder root SIX-Automated-Presence ke PATH (Environment Variable)
-
-2. Jalankan cron.bat untuk aktivasi/deaktivasi CRON
-
-Catatan: 
-Auto scheduler ini dibuat untuk run program setiap 60 menit sejak tasks scheduler dibuat, Anda dapat menyesuaikannya sendiri dengan mengubah cron.bat, silakan link referensi
-Sebaiknya buat tasks scheduler ketika baru saja mengabsen, misal Anda meengabsen pada 7.01 dan membuat tasks schedule pada 7.02 maka Program akan di run pada 8.02, 9.02, dst sehingga Anda tidak kelewatan Presensi.
-Hati-hati bila jadwal kuliah Anda Ada yang tidak memiliki pola yang tetap.
-
-Referensi: [Membuat task scheduler pada Windwos](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/schtasks)
-
-
-# Contributing
-
-Jika hendak contribute, silahkan submit Pull Request, nanti akan direview. (Mungkin) akan butuh beberapa hal seperti:
-
-- CRON support (script jalan di background tiap suatu interval), sudah ada namun unverified
-- Multithread support (melakukan absensi beberapa orang sekaligus)
-
-# Contributors
+Wall of contributors:
 <a href="https://github.com/mkamadeus/SIX-Automated-Presence/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=mkamadeus/SIX-Automated-Presence" />
+<img src="https://contrib.rocks/image?repo=mkamadeus/SIX-Automated-Presence" />
 </a>
-
-
-# Issue
-Anda juga dapat membuat kontribusi untuk project ini dengan melaporkan issue
-Jangan percaya program ini 100%, tetap lakukan pengecekan kembali

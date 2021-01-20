@@ -1,5 +1,6 @@
 # from presence import presence
-from six_presence.presence_by_request import presence
+# from six_presence.presence_by_request import presence
+from six_presence.presence import fill_presence
 import json
 import os
 
@@ -15,10 +16,11 @@ with open(os.path.join(path,'credentials.json'), 'r') as f:
 # def fail(code, classcode, message):
 #     print(f"Fail {code}. Reason: {message}")
 
+
 def success():
     print('yey')
 
 def fail(status):
     print(f'no >:( {status}')
 
-presence(credentials['username'], credentials['password'], success_callback=success, fail_callback=fail)
+fill_presence(credentials['username'], credentials['password'], success_callback=success, fail_callback=fail)

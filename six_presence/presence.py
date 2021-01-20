@@ -6,7 +6,7 @@ from .status_code import RequestCode, RequestCodeMessage
 from bs4 import BeautifulSoup
 
 # Load credentials
-def presence(username: str, password: str, fail_callback=lambda status: None, success_callback=lambda: None):
+def fill_presence(username: str, password: str, fail_callback=lambda status: None, success_callback=lambda: None):
     '''
     Tries to fill presence on that day, on that specific range of time. Based on WIB. Can't be used to check on a specific class to avoid 
     '''
@@ -89,7 +89,9 @@ def presence(username: str, password: str, fail_callback=lambda status: None, su
                 "form[returnTo]": class_link["href"].strip(),
                 "form[_token]": class_token,
             }
-            result = session.post(f'https://akademik.itb.ac.id{class_action}', presence_data)
+
+            # Do a POST request to fill presence
+            session.post(f'https://akademik.itb.ac.id{class_action}', presence_data)
 
             # Presence form filled (status code SUCCESS)
             logging.info(f'{RequestCodeMessage.SUCCESS} for {c["name"]}')

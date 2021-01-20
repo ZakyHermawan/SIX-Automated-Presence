@@ -5,4 +5,5 @@ venv/
 __pycache__/
 .mypy_cache/
 dist/
-six_presence_mkamadeus.egg-info/
+*.egg-info/
+build/

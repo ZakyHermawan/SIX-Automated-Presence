@@ -4,7 +4,7 @@ with open("README.md", "r", encoding='utf-8') as f:
   long_description = f.read()
 
 setuptools.setup(
-  name="six-presence-mkamadeus",
+  name="six-presence",
   version="v2.0.1",
   author="Matthew Kevin Amadeus",
   description="SIX presence function.",

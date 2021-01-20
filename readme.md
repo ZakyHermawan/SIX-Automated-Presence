@@ -68,8 +68,14 @@ Referensi: [Membuat task scheduler pada Windwos](https://docs.microsoft.com/en-u
 
 Jika hendak contribute, silahkan submit Pull Request, nanti akan direview. (Mungkin) akan butuh beberapa hal seperti:
 
-- CRON support (script jalan di background tiap suatu interval)
+- CRON support (script jalan di background tiap suatu interval), sudah ada namun unverified
 - Multithread support (melakukan absensi beberapa orang sekaligus)
+
+# Contributors
+<a href="https://github.com/mkamadeus/SIX-Automated-Presence/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=mkamadeus/SIX-Automated-Presence" />
+</a>
+
 
 # Issue
 Anda juga dapat membuat kontribusi untuk project ini dengan melaporkan issue

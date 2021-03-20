@@ -1,16 +1,15 @@
-#
-
 # CRON
 
 ## Windows:
 
-1. Tambahkan folder root SIX-Automated-Presence ke PATH (Environment Variable)
+1. Buat virtual environment dengan nama venv
+2. Aktifkan virtual environment
+3. ```pip install six-presence```
+4. jalankan cron.bat
 
-2. Jalankan cron.bat untuk aktivasi/deaktivasi CRON
 
 Catatan:
-Auto scheduler ini dibuat untuk run program setiap 60 menit sejak tasks scheduler dibuat, Anda dapat menyesuaikannya sendiri dengan mengubah cron.bat, silakan link referensi
-Sebaiknya buat tasks scheduler ketika baru saja mengabsen, misal Anda meengabsen pada 7.01 dan membuat tasks schedule pada 7.02 maka Program akan di run pada 8.02, 9.02, dst sehingga Anda tidak kelewatan Presensi.
-Hati-hati bila jadwal kuliah Anda Ada yang tidak memiliki pola yang tetap.
+Terkadang task yang sudah diberikan tidak dijalankan oleh windows karena komputer tidak terhubung dengan sumber tegangan AC. 
+Untuk menangani hal ini kita bisa mengubah pengaturannya (windows search > Task Scheduler Library > Double click pada AutoLoginSIX > Conditions  lalu matikan centang untuk "*start the task only if the computer is on AC power*" pada bagian Power)
 
 Referensi: [Membuat task scheduler pada Windwos](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/schtasks)

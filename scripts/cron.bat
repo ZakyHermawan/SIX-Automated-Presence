@@ -5,9 +5,12 @@ schtasks /query /TN "AutoLoginSIX" >NUL 2>&1
 IF %errorlevel% NEQ 0 (
     SET "ACRON=n"
     SET /P "ACRON=CRON belum diaktifkan. Aktifkan CRON (Y/[n])? "
-    IF !ACRON!==Y (
+    IF !ACRON!==Y (		
+		SET "INTERVAL=60"
+		SET /P "INTERVAL=Masukkan interval dalam menit (default 60): "
         echo Mengaktifkan CRON...
-        schtasks /CREATE /SC HOURLY /tn AutoLoginSIX /tr run.bat
+
+        schtasks /CREATE /SC minute /mo !INTERVAL! /tn AutoLoginSIX /tr "%~dp0run.bat"
         schtasks /RUN /tn AutoLoginSIX
         echo Berhasil mengaktifkan CRON!
     ) ELSE (
